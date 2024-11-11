@@ -127,6 +127,35 @@ function App() {
         return description.length > 100 ? description.substring(0, 100) + '...' : description;
     };
 
+    const checkFieldsEmpty = (inputs) => {
+        if ((inputs.name).length > 0 && (inputs.startDate).length > 0 && (inputs.plantType).length > 0) {
+            return true
+        } else {
+            return false
+        }
+    };
+
+    const displayPlantAdvice = (plantType) => {
+        switch (plantType) {
+            case "Alecrim":
+                return "Gosta de sol, mas prefere temperaturas médias (20-30°C). Não deixe os pimentões tocar no chão!"
+            case "Hortelã":
+                return "Prefere solo úmido, recomendado regar quase todos os dias, dependendo da umidade."
+            case "Ora-pró-nobis":
+                return "Faz parte da familia dos cactos, então só é necessario regá-la, por aí, uma vez a cada dez dias."
+            case "Manjericão":
+                return "Prefere climas quentes. Deve-se regar constantemente mas de forma moderada, as flores roubam um pouco da força da planta e devem ser cortadas."
+            case "Orégano":
+                return "Prefere climas mais amenos, mas se lida bem com o sol. Recomendado regar moderadamente de uma forma constante."
+            case "Salsa":
+                return "Gosta de climas amenos mas também suporta um pouco de sombra. Prefere solos com boa drenagem e também de irrigação, pode-se usar uma mangueira para isso."
+            case "Cebolinha":
+                return "Recomendado regar a cada dois dias, mas verifique se realmente precisa de água, pois elas são delicadas."
+            default:
+                return "" 
+        }
+    }
+
     return (
         <div style={{ fontFamily: 'Arial, sans-serif', width: '800px', margin: '0 auto', padding: '20px' }}>
             {/* Menu superior */}
@@ -138,15 +167,16 @@ function App() {
             {/* Seção para Adicionar Novo Projeto */}
             <section id="addProject" style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '5px', marginBottom: '30px' }}>
                 <h2>{editingProject ? 'Editar Projeto' : 'Adicionar Novo Projeto'}</h2>
+                <label>Nome da escola</label>
                 <input
                     type="text"
                     name="name"
                     value={newProject.name}
                     onChange={handleInputChange}
-                    placeholder="Nome do Projeto"
                     style={{ padding: '5px', marginBottom: '10px', width: '100%' }}
                 />
                 <br />
+                <label>Tipo de planta</label>
                 <select
                     name="plantType"
                     value={newProject.plantType}
@@ -154,15 +184,19 @@ function App() {
                     style={{ padding: '5px', marginBottom: '10px', width: '100%' }}
                 >
                     <option value="">Selecione o Tipo de Planta</option>
-                    <option value="Alface">Alface</option>
-                    <option value="Tomate">Tomate</option>
-                    <option value="Pimentão">Pimentão</option>
+                    <option value="Oregano">Oregano</option>
+                    <option value="Manjericão">Manjericão</option>
+                    <option value="Alecrim">Alecrim</option>
                     <option value="Hortelã">Hortelã</option>
                     <option value="Ora-pró-nobis">Ora-pró-nobis</option>
-                    <option value="Cenoura">Cenoura</option>
-                    <option value="Brócolis">Brócolis</option>
+                    <option value="Salsa">Salsa</option>
+                    <option value="Cebolinha">Cebolinha</option>
                 </select>
+                {newProject.plantType != "" && (
+                    <p style={{ fontSize:'75%' }}>Como cuidar: {displayPlantAdvice(newProject.plantType)}</p>
+                )}
                 <br />
+                <label>Data de início do projeto</label>
                 <input
                     type="date"
                     name="startDate"
@@ -171,16 +205,27 @@ function App() {
                     style={{ padding: '5px', marginBottom: '10px', width: '100%' }}
                 />
                 <br />
+                <label>Descrição da horta</label>
                 <textarea
                     name="description"
                     value={newProject.description}
                     onChange={handleInputChange}
-                    placeholder="Descrição do Projeto"
+                    placeholder="(especifique coisas como tamanho da horta, e onde esta fica. Opcional)"
                     rows="4"
                     style={{ padding: '5px', width: '100%', marginBottom: '10px' }}
                 />
                 <br />
-                <button onClick={handleAddProject} style={{ marginTop: '10px' }}>{editingProject ? 'Salvar Projeto' : 'Adicionar Projeto'}</button>
+                {/**/}
+                {checkFieldsEmpty(newProject) ?
+                    <button onClick={handleAddProject} style={{ marginTop: '10px' }}>{editingProject ? 'Salvar Projeto' : 'Adicionar Projeto'}</button>
+                    :
+                    <div style={{ color:'#822', fontSize:'70%' }}>
+                    <p>Preencha os campos a seguir antes de {editingProject? 'editar' : 'adicionar'} o projeto:</p>
+                    {(newProject.name).length === 0 && (<p> - Nome da Escola</p>)}
+                    {(newProject.plantType).length === 0 && (<p> - Tipo de planta</p>)}
+                    {(newProject.startDate).length === 0 && (<p> - Data de início do projeto</p>)}
+                    </div>
+                    }
                 {editingProject && (
                     <button onClick={handleCancelEdit} style={{ marginTop: '10px', marginLeft: '10px' }}>Cancelar</button>
                 )}
@@ -225,14 +270,14 @@ function App() {
 
             {/* Lista de Projetos */}
             <section id="projectList" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <h2>Lista de Projetos da ONG</h2>
+                <h2>Lista de Escolas e suas Hortas</h2>
                 {filteredProjects.length === 0 ? (
-                    <p>Nenhum projeto encontrado.</p>
+                    <p>Nenhum projeto de horta encontrado.</p>
                 ) : (
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: '#f2f2f2' }}>
-                                <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #ddd' }}>Nome</th>
+                                <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #ddd' }}>Nome da Escola</th>
                                 <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #ddd' }}>Tipo de Planta</th>
                                 <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #ddd' }}>Data de Criação</th>
                                 <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #ddd' }}>Descrição</th>
