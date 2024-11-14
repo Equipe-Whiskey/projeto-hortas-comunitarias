@@ -16,7 +16,7 @@ function App() {
     const [plantFilter, setPlantFilter] = useState("");
     const [sortOption, setSortOption] = useState("name");
     const [expandedDescription, setExpandedDescription] = useState(null); // For expanding descriptions
-    
+
     /* Pega os projetos do backend para mostrar no frontend */
     useEffect(() => {
         axios.get('http://localhost:5000/projects')
@@ -26,11 +26,11 @@ function App() {
             })
             .catch(error => console.error('Erro ao buscar projetos:', error));
     }, []);
-    
+
     /* Implementação de vários filtros */
     useEffect(() => {
         let updatedProjects = [...projects];
-        
+
         /* Mostra apenas os projetos cujos nomes da escola condizem com o filtro */
         if (searchTerm) {
             updatedProjects = updatedProjects.filter(project =>
@@ -60,7 +60,7 @@ function App() {
 
         setFilteredProjects(updatedProjects);
     }, [searchTerm, plantFilter, sortOption, projects]);
-    
+
     /* Certifica-se de que os variaveis a ser inseridas no backend sejam iguais aos valores no formulário */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -82,7 +82,7 @@ function App() {
                 .catch(error => console.error('Erro ao adicionar projeto:', error));
         }
     };
-    
+
     /* Deleta o projeto pelo backend */
     const handleDeleteProject = (projectId) => {
         axios.delete(`http://localhost:5000/projects/${projectId}`)
@@ -103,7 +103,7 @@ function App() {
         });
         scrollToSection('addProject');
     };
-    
+
     /* Faz uma requisição PUT para atualizar o projeto*/
     const handleUpdateProject = () => {
         axios.put(`http://localhost:5000/projects/${editingProject}`, newProject)
@@ -116,7 +116,7 @@ function App() {
             })
             .catch(error => console.error('Erro ao atualizar projeto:', error));
     };
-    
+
     /*Reseta as mudanças ao projeto caso o usuário cancele a edição*/
     const handleCancelEdit = () => {
         setEditingProject(null);
@@ -130,7 +130,7 @@ function App() {
             element.scrollIntoView({ behavior: 'smooth' });
         }
     };
-    
+
     /* Altera entre a descrição extendida e encurtada */
     const toggleDescription = (projectId) => {
         setExpandedDescription(expandedDescription === projectId ? null : projectId);
@@ -209,7 +209,7 @@ function App() {
                     <option value="Cebolinha">Cebolinha</option>
                 </select>
                 {newProject.plantType != "" && (
-                    <p style={{ fontSize:'75%' }}>Como cuidar: {displayPlantAdvice(newProject.plantType)}</p>
+                    <p style={{ fontSize: '75%' }}>Como cuidar: {displayPlantAdvice(newProject.plantType)}</p>
                 )}
                 <br />
                 <label>Data de início do projeto</label>
@@ -231,17 +231,17 @@ function App() {
                     style={{ padding: '5px', width: '100%', marginBottom: '10px' }}
                 />
                 <br />
-                
+
                 {checkFieldsEmpty(newProject) ?
                     <button onClick={handleAddProject} style={{ marginTop: '10px' }}>{editingProject ? 'Salvar Projeto' : 'Adicionar Projeto'}</button>
                     :
-                    <div style={{ color:'#822', fontSize:'70%' }}>
-                    <p>Preencha os campos a seguir antes de {editingProject? 'editar' : 'adicionar'} o projeto:</p>
-                    {(newProject.name).length === 0 && (<p> - Nome da Escola</p>)}
-                    {(newProject.plantType).length === 0 && (<p> - Tipo de planta</p>)}
-                    {(newProject.startDate).length === 0 && (<p> - Data de início do projeto</p>)}
+                    <div style={{ color: '#822', fontSize: '70%' }}>
+                        <p>Preencha os campos a seguir antes de {editingProject ? 'editar' : 'adicionar'} o projeto:</p>
+                        {(newProject.name).length === 0 && (<p> - Nome da Escola</p>)}
+                        {(newProject.plantType).length === 0 && (<p> - Tipo de planta</p>)}
+                        {(newProject.startDate).length === 0 && (<p> - Data de início do projeto</p>)}
                     </div>
-                    }
+                }
                 {editingProject && (
                     <button onClick={handleCancelEdit} style={{ marginTop: '10px', marginLeft: '10px' }}>Cancelar</button>
                 )}
@@ -264,13 +264,13 @@ function App() {
                         style={{ padding: '5px', flex: '1' }}
                     >
                         <option value="">Filtrar por Tipo de Planta</option>
-                        <option value="Alface">Alface</option>
-                        <option value="Tomate">Tomate</option>
-                        <option value="Pimentão">Pimentão</option>
+                        <option value="Oregano">Oregano</option>
+                        <option value="Manjericão">Manjericão</option>
+                        <option value="Alecrim">Alecrim</option>
                         <option value="Hortelã">Hortelã</option>
                         <option value="Ora-pró-nobis">Ora-pró-nobis</option>
-                        <option value="Cenoura">Cenoura</option>
-                        <option value="Brócolis">Brócolis</option>
+                        <option value="Salsa">Salsa</option>
+                        <option value="Cebolinha">Cebolinha</option>
                     </select>
                     <select
                         value={sortOption}
