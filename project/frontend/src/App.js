@@ -16,7 +16,8 @@ function App() {
     const [plantFilter, setPlantFilter] = useState("");
     const [sortOption, setSortOption] = useState("name");
     const [expandedDescription, setExpandedDescription] = useState(null); // For expanding descriptions
-
+    
+    /* Pega os projetos do backend para mostrar no frontend */
     useEffect(() => {
         axios.get('http://localhost:5000/projects')
             .then(response => {
@@ -25,10 +26,12 @@ function App() {
             })
             .catch(error => console.error('Erro ao buscar projetos:', error));
     }, []);
-
+    
+    /* Implementação de vários filtros */
     useEffect(() => {
         let updatedProjects = [...projects];
-
+        
+        /* Mostra apenas os projetos cujos nomes da escola condizem com o filtro */
         if (searchTerm) {
             updatedProjects = updatedProjects.filter(project =>
                 project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,10 +39,12 @@ function App() {
             );
         }
 
+        /* Mostra os projetos com o tipo de planta selecionado como filtro */
         if (plantFilter) {
             updatedProjects = updatedProjects.filter(project => project.plantType === plantFilter);
         }
 
+        /* Ordena os projetos por tipo de planta */
         updatedProjects.sort((a, b) => {
             switch (sortOption) {
                 case "name":
@@ -55,12 +60,14 @@ function App() {
 
         setFilteredProjects(updatedProjects);
     }, [searchTerm, plantFilter, sortOption, projects]);
-
+    
+    /* Certifica-se de que os variaveis a ser inseridas no backend sejam iguais aos valores no formulário */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewProject(prevState => ({ ...prevState, [name]: value }));
     };
 
+    /* Adiciona o projeto ao backend */
     const handleAddProject = () => {
         if (editingProject) {
             handleUpdateProject();
@@ -75,7 +82,8 @@ function App() {
                 .catch(error => console.error('Erro ao adicionar projeto:', error));
         }
     };
-
+    
+    /* Deleta o projeto pelo backend */
     const handleDeleteProject = (projectId) => {
         axios.delete(`http://localhost:5000/projects/${projectId}`)
             .then(response => {
@@ -84,6 +92,7 @@ function App() {
             .catch(error => console.error('Erro ao deletar projeto:', error));
     };
 
+    /* Certifica-se de que os variaveis a ser inseridas no backend sejam iguais aos valores no formulário */
     const handleEditProject = (project) => {
         setEditingProject(project._id);
         setNewProject({
@@ -94,7 +103,8 @@ function App() {
         });
         scrollToSection('addProject');
     };
-
+    
+    /* Faz uma requisição PUT para atualizar o projeto*/
     const handleUpdateProject = () => {
         axios.put(`http://localhost:5000/projects/${editingProject}`, newProject)
             .then(response => {
@@ -106,27 +116,32 @@ function App() {
             })
             .catch(error => console.error('Erro ao atualizar projeto:', error));
     };
-
+    
+    /*Reseta as mudanças ao projeto caso o usuário cancele a edição*/
     const handleCancelEdit = () => {
         setEditingProject(null);
         setNewProject({ name: '', description: '', plantType: '', startDate: '' });
     };
 
+    /* Rola a tela para a seção desejada */
     const scrollToSection = (sectionId) => {
         const element = document.getElementById(sectionId);
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
         }
     };
-
+    
+    /* Altera entre a descrição extendida e encurtada */
     const toggleDescription = (projectId) => {
         setExpandedDescription(expandedDescription === projectId ? null : projectId);
     };
 
+    /* Encurta a descrição se esta for muito longa */
     const truncateDescription = (description) => {
         return description.length > 100 ? description.substring(0, 100) + '...' : description;
     };
 
+    /* Verifica se todos os campos, exceto a descrição do projeto, estão preenchidos. Usado para prevenir de que */
     const checkFieldsEmpty = (inputs) => {
         if ((inputs.name).length > 0 && (inputs.startDate).length > 0 && (inputs.plantType).length > 0) {
             return true
@@ -135,24 +150,25 @@ function App() {
         }
     };
 
+    /* Mostra dicas de como cuidar das plantas na lista */
     const displayPlantAdvice = (plantType) => {
         switch (plantType) {
             case "Alecrim":
-                return "Gosta de sol, mas prefere temperaturas médias (20-30°C). Não deixe os pimentões tocar no chão!"
+                return "Vive bem em climas quentes e não precisa de muita água para viver.";
             case "Hortelã":
-                return "Prefere solo úmido, recomendado regar quase todos os dias, dependendo da umidade."
+                return "Prefere solo úmido, recomendado regar quase todos os dias, dependendo da umidade.";
             case "Ora-pró-nobis":
-                return "Faz parte da familia dos cactos, então só é necessario regá-la, por aí, uma vez a cada dez dias."
+                return "Faz parte da familia dos cactos, então só é necessario regá-la, por aí, uma vez a cada dez dias.";
             case "Manjericão":
-                return "Prefere climas quentes. Deve-se regar constantemente mas de forma moderada, as flores roubam um pouco da força da planta e devem ser cortadas."
+                return "Prefere climas quentes. Deve-se regar constantemente mas de forma moderada, as flores roubam um pouco da força da planta e devem ser cortadas.";
             case "Orégano":
-                return "Prefere climas mais amenos, mas se lida bem com o sol. Recomendado regar moderadamente de uma forma constante."
+                return "Prefere climas mais amenos, mas se lida bem com o sol. Recomendado regar moderadamente de uma forma constante.";
             case "Salsa":
-                return "Gosta de climas amenos mas também suporta um pouco de sombra. Prefere solos com boa drenagem e também de irrigação, pode-se usar uma mangueira para isso."
+                return "Gosta de climas amenos mas também suporta um pouco de sombra. Prefere solos com boa drenagem e também de irrigação, pode-se usar uma mangueira para isso.";
             case "Cebolinha":
-                return "Recomendado regar a cada dois dias, mas verifique se realmente precisa de água, pois elas são delicadas."
+                return "Recomendado regar a cada dois dias, mas verifique se realmente precisa de água, pois elas são delicadas.";
             default:
-                return "" 
+                return "";
         }
     }
 
@@ -215,7 +231,7 @@ function App() {
                     style={{ padding: '5px', width: '100%', marginBottom: '10px' }}
                 />
                 <br />
-                {/**/}
+                
                 {checkFieldsEmpty(newProject) ?
                     <button onClick={handleAddProject} style={{ marginTop: '10px' }}>{editingProject ? 'Salvar Projeto' : 'Adicionar Projeto'}</button>
                     :
